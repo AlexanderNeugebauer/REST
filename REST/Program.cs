@@ -10,6 +10,8 @@ namespace REST
    {
       static void Main(string[] args)
       {
+         HttpServer server = new HttpServer();
+         server.run();
       }
    }
 }
