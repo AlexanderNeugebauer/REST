@@ -10,11 +10,48 @@ using System.Net.Sockets;
 
 namespace REST
 {
+   [Flags]
+   enum Method
+   {
+      GET,
+      POST,
+      PUT,
+      DELETE
+   }
    class HttpServer
    {
+      private class Endpoint
+      {
+         private string _path;
+         private Method _verb;
+         private Func<string> _evnt;
+
+         public Endpoint(string path, Method verb, Func<string> func)
+         {
+            _path = path;
+            _verb = verb;
+            _evnt = func;
+         }
+         public string Signature()
+         {
+            return Signature(_verb, _path);
+         }
+
+         public void setEvent(Func<string> func)
+         {
+            _evnt = func;
+         }
+
+         public static string Signature(Method verb, string path)
+         {
+            return $"{verb.ToString()} {path}";
+         }
+      }
+
       private TcpListener _server;
       private Int32 _port;
       private IPAddress _localAddr;
+      private Endpoint[] _endpoints;
 
       public HttpServer()
       {
@@ -68,16 +105,16 @@ namespace REST
                {
                   RequestContext rc = new RequestContext(data);
                   Console.WriteLine(rc.ToString());
+               
+                  // Send back a response.
 
                   byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
                   stream.Write(msg, 0, msg.Length);
                }
                catch (Exception e)
                {
-                  throw;
+                  throw; // TODO return 400
                }
-               
-               // Send back a response.
                // Shutdown and end connection
                client.Close();
             }
@@ -95,8 +132,25 @@ namespace REST
          Console.WriteLine("\nHit enter to continue...");
          Console.Read();
       }
+
+      /// <summary>
+      /// Registers a function as endpoint for given path.
+      /// </summary>
+      /// <param name="path">Accepts values in {} as wildcards. e.g /messages/{msgNum}/</param>
+      /// <param name="endPoint"></param>
+      public void RegisterEndpoint(string path, Method verb, Func<string> func)
+      {
+         // check if endpoint already exists
+         foreach (var ep in _endpoints) // ToList to make changes inside foeach despite IEnumberable
+         {
+            if (ep.Signature().Equals(Endpoint.Signature(verb, path)))
+            {
+               ep.setEvent(func);
+               return;
+            }
+         }
+         _endpoints.Append(new Endpoint(path, verb, func));
+      }
+
    }
-
-
-
 }

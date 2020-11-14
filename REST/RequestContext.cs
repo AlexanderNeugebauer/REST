@@ -8,14 +8,6 @@ namespace REST
 {
    class RequestContext
    {
-      [Flags]
-      enum Method
-      {
-         GET,
-         POST,s
-         PUT,
-         DELETE
-      }
       private Method _method;    // HTTP method token
       private string _uri;       // HTTP Request-URI
       private string _version;   // HTTP protocol version

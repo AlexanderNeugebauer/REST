@@ -43,10 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpProtocol.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HttpServer.cs" />
-    <Compile Include="HttpRequest.cs" />
+    <Compile Include="RequestContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
