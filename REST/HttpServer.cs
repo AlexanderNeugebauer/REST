@@ -12,22 +12,27 @@ namespace REST
 {
    class HttpServer
    {
-      private TcpListener server;
-      private Int32 port;
-      private IPAddress localAddr;
+      private TcpListener _server;
+      private Int32 _port;
+      private IPAddress _localAddr;
+
       public HttpServer()
       {
-         port = 80;
-         localAddr = IPAddress.Parse("127.0.0.1");
-         server = new TcpListener(localAddr, port);
+         _port = 80;
+         _localAddr = IPAddress.Parse("127.0.0.1");
+         _server = new TcpListener(_localAddr, _port);
+
       }
 
-      public void run()
+      /// <summary>
+      /// starts running the HTTP Server
+      /// </summary>
+      public void Run()
       {
          try
          {
             // Start listening for client requests.
-            server.Start();
+            _server.Start();
 
             // Buffer for reading data
             Byte[] bytes = new Byte[256];
@@ -40,7 +45,7 @@ namespace REST
 
                // Perform a blocking call to accept requests.
                // You could also use server.AcceptSocket() here.
-               TcpClient client = server.AcceptTcpClient();
+               TcpClient client = _server.AcceptTcpClient();
                Console.WriteLine("Connected!");
 
                data = "";
@@ -51,21 +56,28 @@ namespace REST
                int i;
 
                // Loop to receive all the data sent by the client.
-               
-               while (stream.DataAvailable)
+
+               do
                {
                   i = stream.Read(bytes, 0, bytes.Length);
                   // Translate data bytes to a ASCII string.
                   data += System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-               }
-               Console.WriteLine("Received: {0}", data);
+               } while (stream.DataAvailable);
                // Process the data sent by the client.
+               try
+               {
+                  RequestContext rc = new RequestContext(data);
+                  Console.WriteLine(rc.ToString());
 
-
+                  byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+                  stream.Write(msg, 0, msg.Length);
+               }
+               catch (Exception e)
+               {
+                  throw;
+               }
+               
                // Send back a response.
-               byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
-               stream.Write(msg, 0, msg.Length);
-               Console.WriteLine("Sent: {0}", data);
                // Shutdown and end connection
                client.Close();
             }
@@ -77,7 +89,7 @@ namespace REST
          finally
          {
             // Stop listening for new clients.
-            server.Stop();
+            _server.Stop();
          }
 
          Console.WriteLine("\nHit enter to continue...");
