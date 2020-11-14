@@ -12,7 +12,7 @@ namespace REST
       private string _uri;       // HTTP Request-URI
       private string _version;   // HTTP protocol version
       private Dictionary<string, string> _headers = new Dictionary<string, string>(); // HTTP headers
-      private string body;       // HTTP body
+      private string _body;       // HTTP body
       public RequestContext(string data)
       {
          ParseFromString(data);
@@ -25,7 +25,7 @@ namespace REST
          {
             ret += ($"{header.Key}: {header.Value}\r\n");
          }
-         ret += body;
+         ret += _body;
 
          return ret;
       }
@@ -63,7 +63,7 @@ namespace REST
          }
 
          // body
-         this.body = data;
+         this._body = data;
       }
 
       private void SetMethod(string verb)

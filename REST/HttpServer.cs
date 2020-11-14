@@ -18,47 +18,95 @@ namespace REST
       PUT,
       DELETE
    }
+
+   [Flags]
+   enum StatusCode
+   {
+      OK = 200,
+      Bad_Request = 400
+   }
    class HttpServer
    {
-      private class Endpoint
+      /// <summary>
+      /// Container Class for all Endpoints. 
+      /// Contains path, http verb and event
+      /// </summary>
+      internal class Endpoints
       {
-         private string _path;
-         private Method _verb;
-         private Func<string> _evnt;
+         // Endpoints.RegisterEndpoint("/messages/{msgNr}, Method.GET, 
 
-         public Endpoint(string path, Method verb, Func<string> func)
+         private Dictionary<string, Dictionary<Method, Func<RequestContext, ResponseContext>>> _endPoints;
+
+         public Endpoints()
          {
-            _path = path;
-            _verb = verb;
-            _evnt = func;
-         }
-         public string Signature()
-         {
-            return Signature(_verb, _path);
+            _endPoints = new Dictionary<string, Dictionary<Method, Func<RequestContext, ResponseContext>>>();
          }
 
-         public void setEvent(Func<string> func)
+         public void RegisterEndpoint(string path, Method verb, Func<RequestContext, ResponseContext> func)
          {
-            _evnt = func;
+            if (_endPoints.ContainsKey(path))
+            {
+               if (_endPoints[path].ContainsKey(verb))
+               {
+                  _endPoints[path][verb] = func;
+               }
+               else
+               {
+                  _endPoints[path].Add(verb, func);
+               }
+            }
+            else
+            {
+               _endPoints.Add(path, new Dictionary<Method, Func<RequestContext, ResponseContext>>);
+               _endPoints[path].Add(verb, func);
+            }
          }
 
-         public static string Signature(Method verb, string path)
+         public void DeleteEndpoint(string path)
          {
-            return $"{verb.ToString()} {path}";
+            if (_endPoints.ContainsKey(path))
+            {
+               _endPoints.Remove(path);
+            }
          }
+         
+         public void DeleteEndpoint(string path, Method verb)
+         {
+            if (_endPoints.ContainsKey(path) && _endPoints[path].ContainsKey(verb))
+            {
+               _endPoints[path].Remove(verb);
+            }
+         }
+
+         public ResponseContext abc(RequestContext rc)
+         {
+            
+            return new ResponseContext();
+         }
+
+
+         // tried out operator overloading
+         //public Dictionary<Method, Func<ResponseContext>> this[string i]
+         //{
+         //   get { return _endpoints[i]; }
+         //   //set { this.endPnts[i] = value; }
+         //}
       }
 
       private TcpListener _server;
       private Int32 _port;
       private IPAddress _localAddr;
-      private Endpoint[] _endpoints;
+      //private Endpoint[] _endpoints;
+      private Dictionary<string, Dictionary<Method, Func<ResponseContext>>> _endPoints;
+
+      public Endpoints Endpoint { get; }
 
       public HttpServer()
       {
          _port = 80;
          _localAddr = IPAddress.Parse("127.0.0.1");
          _server = new TcpListener(_localAddr, _port);
-
+         
       }
 
       /// <summary>
@@ -131,25 +179,6 @@ namespace REST
 
          Console.WriteLine("\nHit enter to continue...");
          Console.Read();
-      }
-
-      /// <summary>
-      /// Registers a function as endpoint for given path.
-      /// </summary>
-      /// <param name="path">Accepts values in {} as wildcards. e.g /messages/{msgNum}/</param>
-      /// <param name="endPoint"></param>
-      public void RegisterEndpoint(string path, Method verb, Func<string> func)
-      {
-         // check if endpoint already exists
-         foreach (var ep in _endpoints) // ToList to make changes inside foeach despite IEnumberable
-         {
-            if (ep.Signature().Equals(Endpoint.Signature(verb, path)))
-            {
-               ep.setEvent(func);
-               return;
-            }
-         }
-         _endpoints.Append(new Endpoint(path, verb, func));
       }
 
    }

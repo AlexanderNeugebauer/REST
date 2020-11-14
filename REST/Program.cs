@@ -11,6 +11,8 @@ namespace REST
       static void Main(string[] args)
       {
          HttpServer server = new HttpServer();
+         server.Endpoint.RegisterEndpoint("/message/{msgNr}", Method.GET, delegate (RequestContext rc) { return new ResponseContext(); });
+
          server.Run();
       }
    }
