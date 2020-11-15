@@ -19,12 +19,13 @@ namespace REST
       DELETE
    }
 
-   [Flags]
    enum StatusCode
    {
       OK = 200,
-      Bad_Request = 400
+      Bad_Request = 400,
+      Not_Found = 404
    }
+   
    class HttpServer
    {
       /// <summary>
@@ -42,6 +43,12 @@ namespace REST
             _endPoints = new Dictionary<string, Dictionary<Method, Func<RequestContext, ResponseContext>>>();
          }
 
+         /// <summary>
+         /// registers or alters an existing endpoint
+         /// </summary>
+         /// <param name="path">Starts with / ------ Can contain wildcard as * ------ e.g. /messages/* </param>
+         /// <param name="verb">HTTP method</param>
+         /// <param name="func">function handler</param>
          public void RegisterEndpoint(string path, Method verb, Func<RequestContext, ResponseContext> func)
          {
             if (_endPoints.ContainsKey(path))
@@ -57,7 +64,7 @@ namespace REST
             }
             else
             {
-               _endPoints.Add(path, new Dictionary<Method, Func<RequestContext, ResponseContext>>);
+               _endPoints.Add(path, new Dictionary<Method, Func<RequestContext, ResponseContext>>());
                _endPoints[path].Add(verb, func);
             }
          }
@@ -78,19 +85,29 @@ namespace REST
             }
          }
 
-         public ResponseContext abc(RequestContext rc)
+         public ResponseContext invokeEndpoint(RequestContext reqC)
          {
+            var path = reqC.getPath();
+            var verb = reqC.GetMethod();
+            if (_endPoints.ContainsKey(path) && _endPoints[path].ContainsKey(verb))
+            {
+               return _endPoints[path][verb].Invoke(reqC);
+            }
+            var generalizedPath = path.Substring(0, path.LastIndexOf("/")) + "/*";
+            if (_endPoints.ContainsKey(generalizedPath) && _endPoints[generalizedPath].ContainsKey(verb))
+            {
+               return _endPoints[generalizedPath][verb].Invoke(reqC);
+            }
+            Console.WriteLine(path);
+            Console.WriteLine(generalizedPath);
+            foreach (var item in _endPoints.Keys)
+            {
+               Console.WriteLine(item);
+            }
             
-            return new ResponseContext();
+
+            throw new Exception("404");
          }
-
-
-         // tried out operator overloading
-         //public Dictionary<Method, Func<ResponseContext>> this[string i]
-         //{
-         //   get { return _endpoints[i]; }
-         //   //set { this.endPnts[i] = value; }
-         //}
       }
 
       private TcpListener _server;
@@ -106,7 +123,7 @@ namespace REST
          _port = 80;
          _localAddr = IPAddress.Parse("127.0.0.1");
          _server = new TcpListener(_localAddr, _port);
-         
+         Endpoint = new Endpoints();
       }
 
       /// <summary>
@@ -151,12 +168,14 @@ namespace REST
                // Process the data sent by the client.
                try
                {
-                  RequestContext rc = new RequestContext(data);
-                  Console.WriteLine(rc.ToString());
-               
-                  // Send back a response.
+                  RequestContext reqC = new RequestContext(data);
+                  Console.WriteLine(reqC.ToString());
 
-                  byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+                  // Send back a response.
+                  ResponseContext resC = Endpoint.invokeEndpoint(reqC);
+                  
+                  
+                  byte[] msg = System.Text.Encoding.ASCII.GetBytes(resC.ToString());
                   stream.Write(msg, 0, msg.Length);
                }
                catch (Exception e)
