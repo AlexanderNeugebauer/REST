@@ -83,7 +83,7 @@ namespace REST
                _method = Method.DELETE;
                break;
             default:
-               throw new Exception("400");
+               throw new HttpException(StatusCode.Bad_Request);
          }
       }
       private void SetPath(string path)
@@ -103,7 +103,7 @@ namespace REST
                break;
             default:
                Console.WriteLine(v);
-               throw new Exception("400");
+               throw new HttpException(StatusCode.Bad_Request);
          }
       }
 

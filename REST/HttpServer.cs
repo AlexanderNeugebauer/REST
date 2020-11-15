@@ -98,16 +98,10 @@ namespace REST
             if (_endPoints.ContainsKey(generalizedPath) && _endPoints[generalizedPath].ContainsKey(verb))
             {
                return _endPoints[generalizedPath][verb].Invoke(reqC);
-            }
-            Console.WriteLine(path);
-            Console.WriteLine(generalizedPath);
-            foreach (var item in _endPoints.Keys)
-            {
-               Console.WriteLine(item);
-            }
-            
+            }          
 
-            throw new Exception("404");
+            // no endpoint found
+            throw new HttpException(StatusCode.Not_Found);
          }
       }
 
@@ -162,6 +156,10 @@ namespace REST
                   RequestContext reqC = new RequestContext(data);
                   response = Endpoint.invokeEndpoint(reqC);
                   //Console.WriteLine(reqC.ToString());
+               }
+               catch (HttpException e)
+               {
+                  response = new ResponseContext(e.StatusCode);
                }
                catch (Exception e)
                {
