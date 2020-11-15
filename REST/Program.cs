@@ -11,13 +11,13 @@ namespace REST
    {
       public class Messages
       {
-         List<string> _messages = new List<string>();
+         private List<string> _messages = new List<string>();
 
          // operator overloading for []
          public string this[int i]
          {
             get { return _messages[i]; }
-            // set { _messages[i] = value; }
+            set { _messages[i] = value; }
          }
 
          public ResponseContext List(RequestContext reqC)
@@ -38,24 +38,62 @@ namespace REST
          {
             _messages.Add(reqC.getBody());
             ResponseContext response = new ResponseContext(StatusCode.OK);
-            response.Status = StatusCode.OK;
             response.Body = (_messages.Count - 1).ToString();
             return response;
          }
 
          public ResponseContext Show(RequestContext reqC)
          {
-            return new ResponseContext();
+            string path = reqC.getPath();
+            Int32.TryParse(path.Substring(path.LastIndexOf('/') + 1), out int i);
+
+            ResponseContext response = new ResponseContext();
+            try
+            {
+               response.Body = this[i - 1];
+               response.Status = StatusCode.OK;
+            }
+            catch (Exception)
+            {
+               response.Status = StatusCode.Not_Found;
+            }
+            return response;
          }
 
          public ResponseContext Update(RequestContext reqC)
          {
-            return new ResponseContext();
+            string path = reqC.getPath();
+            Int32.TryParse(path.Substring(path.LastIndexOf('/') + 1), out int i);
+
+            ResponseContext response = new ResponseContext();
+            try
+            {
+               this[i - 1] = reqC.getBody();
+               response.Status = StatusCode.OK;
+            }
+            catch (Exception)
+            {
+               response.Status = StatusCode.Not_Found;
+            }
+            return response;
          }
 
          public ResponseContext Delete(RequestContext reqC)
          {
-            return new ResponseContext();
+            string path = reqC.getPath();
+            Int32.TryParse(path.Substring(path.LastIndexOf('/') + 1), out int i);
+
+            ResponseContext response = new ResponseContext();
+            try
+            {
+               _messages.RemoveAt(i - 1);
+               response.Status = StatusCode.OK;
+            }
+            catch (Exception)
+            {
+               response.Status = StatusCode.Not_Found;
+            }
+            return response;
          }
       }
       static void Main(string[] args)

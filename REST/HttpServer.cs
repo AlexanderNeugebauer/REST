@@ -23,7 +23,8 @@ namespace REST
    {
       OK = 200,
       Bad_Request = 400,
-      Not_Found = 404
+      Not_Found = 404,
+      Internal_Server_Error = 500
    }
    
    class HttpServer
@@ -133,56 +134,44 @@ namespace REST
       {
          try
          {
-            // Start listening for client requests.
             _server.Start();
 
-            // Buffer for reading data
             Byte[] bytes = new Byte[256];
-            String data;
 
-            // Enter the listening loop.
             while (true)
             {
                Console.Write("Waiting for a connection... ");
 
-               // Perform a blocking call to accept requests.
-               // You could also use server.AcceptSocket() here.
                TcpClient client = _server.AcceptTcpClient();
+               NetworkStream stream = client.GetStream();
                Console.WriteLine("Connected!");
 
-               data = "";
-
-               // Get a stream object for reading and writing
-               NetworkStream stream = client.GetStream();
-
-               int i;
+               string data = "";
 
                // Loop to receive all the data sent by the client.
-
                do
                {
-                  i = stream.Read(bytes, 0, bytes.Length);
-                  // Translate data bytes to a ASCII string.
-                  data += System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                  int i = stream.Read(bytes, 0, bytes.Length);
+                  data += System.Text.Encoding.ASCII.GetString(bytes, 0, i); // Translate data bytes to a ASCII string.
                } while (stream.DataAvailable);
+
                // Process the data sent by the client.
+               ResponseContext response;
                try
                {
                   RequestContext reqC = new RequestContext(data);
-                  Console.WriteLine(reqC.ToString());
-
-                  // Send back a response.
-                  ResponseContext resC = Endpoint.invokeEndpoint(reqC);
-                  
-                  
-                  byte[] msg = System.Text.Encoding.ASCII.GetBytes(resC.ToString());
-                  stream.Write(msg, 0, msg.Length);
+                  response = Endpoint.invokeEndpoint(reqC);
+                  //Console.WriteLine(reqC.ToString());
                }
                catch (Exception e)
                {
-                  throw; // TODO return 400
+                  response = new ResponseContext(StatusCode.Internal_Server_Error);
                }
-               // Shutdown and end connection
+
+               // Send back a response.
+               byte[] msg = System.Text.Encoding.ASCII.GetBytes(response.ToString());
+               stream.Write(msg, 0, msg.Length);
+
                client.Close();
             }
          }
