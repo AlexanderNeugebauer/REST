@@ -106,5 +106,10 @@ namespace REST
                throw new Exception("400");
          }
       }
+
+      public string getPath() { return _uri; }
+      public Method GetMethod() { return _method; }
+
+      public string getBody() { return _body; }
    }
 }
