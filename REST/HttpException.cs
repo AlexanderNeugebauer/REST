@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace REST
 {
    [Serializable]
-   class HttpException : Exception
+   public class HttpException : Exception
    {
       public StatusCode StatusCode { get; set; }
       public HttpException(StatusCode statusCode)

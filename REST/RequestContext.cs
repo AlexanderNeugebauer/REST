@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace REST
 {
-   class RequestContext
+   public class RequestContext
    {
       private Method _method;    // HTTP method token
       private string _uri;       // HTTP Request-URI
@@ -25,6 +25,7 @@ namespace REST
          {
             ret += ($"{header.Key}: {header.Value}\r\n");
          }
+         ret += "\r\n";
          ret += _body;
 
          return ret;

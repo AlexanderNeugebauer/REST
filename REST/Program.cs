@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace REST
 {
    
-   class Program
+   public class Program
    {
       public class Messages
       {

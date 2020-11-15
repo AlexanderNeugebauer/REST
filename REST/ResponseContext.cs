@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace REST
 {
 
-   class ResponseContext
+   public class ResponseContext
    {
       private string _version;   // HTTP protocol version
       private Dictionary<string, string> _headers = new Dictionary<string, string>(); // HTTP headers

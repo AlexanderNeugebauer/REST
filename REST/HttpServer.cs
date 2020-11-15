@@ -11,7 +11,7 @@ using System.Net.Sockets;
 namespace REST
 {
    [Flags]
-   enum Method
+   public enum Method
    {
       GET,
       POST,
@@ -19,7 +19,7 @@ namespace REST
       DELETE
    }
 
-   enum StatusCode
+   public enum StatusCode
    {
       OK = 200,
       Bad_Request = 400,
@@ -27,13 +27,13 @@ namespace REST
       Internal_Server_Error = 500
    }
    
-   class HttpServer
+   public class HttpServer
    {
       /// <summary>
       /// Container Class for all Endpoints. 
       /// Contains path, http verb and event
       /// </summary>
-      internal class Endpoints
+      public class Endpoints
       {
          // Endpoints.RegisterEndpoint("/messages/{msgNr}, Method.GET, 
 
@@ -161,7 +161,7 @@ namespace REST
                {
                   response = new ResponseContext(e.StatusCode);
                }
-               catch (Exception e)
+               catch (Exception)
                {
                   response = new ResponseContext(StatusCode.Internal_Server_Error);
                }

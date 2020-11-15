@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="REST.HttpException">
+    <Position X="8.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>HttpException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="REST.HttpServer">
+    <Position X="5.75" Y="1" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="REST.HttpServer.Endpoints">
+        <TypeIdentifier>
+          <NewMemberFileName>HttpServer.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAQEAAAAAAAABAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>HttpServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="REST.Program">
+    <Position X="1.75" Y="1" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="REST.Program.Messages">
+        <TypeIdentifier>
+          <NewMemberFileName>Program.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="REST.RequestContext">
+    <Position X="0.75" Y="6.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAiQKAAEAEBAAAIAACAAIAAAAAAAAAAAEAI=</HashCode>
+      <FileName>RequestContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="REST.ResponseContext">
+    <Position X="2.5" Y="6.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAKAAEAAABAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>ResponseContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
