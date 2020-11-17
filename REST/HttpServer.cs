@@ -108,8 +108,6 @@ namespace REST
       private TcpListener _server;
       private Int32 _port;
       private IPAddress _localAddr;
-      //private Endpoint[] _endpoints;
-      private Dictionary<string, Dictionary<Method, Func<ResponseContext>>> _endPoints;
 
       public Endpoints Endpoint { get; }
 

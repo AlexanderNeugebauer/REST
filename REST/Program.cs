@@ -11,7 +11,7 @@ namespace REST
    {
       public class Messages
       {
-         private List<string> _messages = new List<string>();
+         private Dictionary<int, string> _messages = new Dictionary<int, string>();
 
          // operator overloading for []
          public string this[int i]
@@ -24,9 +24,9 @@ namespace REST
          {
             ResponseContext response = new ResponseContext();
             string temp = "";
-            for (int i = 0; i < _messages.Count; i++)
+            foreach (var item in _messages)
             {
-               temp += $"{i}: {_messages[i]}\n";
+               temp += $"{item.Key + 1}: {item.Value}\n";
             }
             response.Body = temp;
             response.Status = StatusCode.OK;
@@ -36,9 +36,9 @@ namespace REST
 
          public ResponseContext Add(RequestContext reqC)
          {
-            _messages.Add(reqC.getBody());
+            _messages.Add(_messages.Count, reqC.getBody());
             ResponseContext response = new ResponseContext(StatusCode.OK);
-            response.Body = (_messages.Count - 1).ToString();
+            response.Body = (_messages.Count).ToString();
             return response;
          }
 
@@ -86,7 +86,7 @@ namespace REST
             ResponseContext response = new ResponseContext();
             try
             {
-               _messages.RemoveAt(i - 1);
+               _messages.Remove(i - 1);
                response.Status = StatusCode.OK;
             }
             catch (Exception)
