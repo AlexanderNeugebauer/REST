@@ -110,7 +110,30 @@ namespace MTCG
 
       public string getDeck()
       {
-         return "";
+         try
+         {
+            Database.Con.Open();
+            var cmd = new NpgsqlCommand($"select * from cards where belongs_to = {ID} and in_deck = true;", Database.Con);
+            var qr = cmd.ExecuteReader();
+            if (!qr.HasRows) { return ""; }
+            List<Card> collection = new List<Card>();
+            object[] buf = new object[16];
+            while (qr.Read())
+            {
+               qr.GetValues(buf);
+               collection.Add(new Card(buf));
+            }
+            Database.Con.Close();
+            return Card.CollectionToJson(collection);
+         }
+         catch (Exception e)
+         {
+            if (Database.Con.State == System.Data.ConnectionState.Open)
+            {
+               Database.Con.Close();
+            }
+            throw e;
+         }
       }
 
    }
