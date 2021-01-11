@@ -36,7 +36,7 @@ namespace REST
 
          public ResponseContext Add(RequestContext reqC)
          {
-            _messages.Add(_messages.Count, reqC.getBody());
+            _messages.Add(_messages.Count, reqC.Body);
             ResponseContext response = new ResponseContext(StatusCode.OK);
             response.Body = (_messages.Count).ToString();
             return response;
@@ -68,7 +68,7 @@ namespace REST
             ResponseContext response = new ResponseContext();
             try
             {
-               this[i - 1] = reqC.getBody();
+               this[i - 1] = reqC.Body;
                response.Status = StatusCode.OK;
             }
             catch (Exception)

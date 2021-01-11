@@ -11,8 +11,8 @@ namespace REST
       private Method _method;    // HTTP method token
       private string _uri;       // HTTP Request-URI
       private string _version;   // HTTP protocol version
-      private Dictionary<string, string> _headers = new Dictionary<string, string>(); // HTTP headers
-      private string _body;       // HTTP body
+      public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>(); // HTTP headers
+      public string Body { get; private set; }       // HTTP body
       public RequestContext(string data)
       {
          ParseFromString(data);
@@ -21,12 +21,12 @@ namespace REST
       override public string ToString()
       {
          string ret = ($"{_method.ToString()} {_uri} {_version}\r\n");
-         foreach (var header in _headers)
+         foreach (var header in Headers)
          {
             ret += ($"{header.Key}: {header.Value}\r\n");
          }
          ret += "\r\n";
-         ret += _body;
+         ret += Body;
 
          return ret;
       }
@@ -60,11 +60,11 @@ namespace REST
          foreach (var header in headerList)
          {
             var pair = header.Split(new string[] { ": " }, StringSplitOptions.None);
-            this._headers.Add(pair[0], pair[1]);
+            this.Headers.Add(pair[0], pair[1]);
          }
 
          // body
-         this._body = data;
+         Body = data;
       }
 
       private void SetMethod(string verb)
@@ -111,6 +111,18 @@ namespace REST
       public string getPath() { return _uri; }
       public Method GetMethod() { return _method; }
 
-      public string getBody() { return _body; }
+      public Dictionary<string, string> getBodyJson() 
+      {
+         Dictionary<string, string> dict = new Dictionary<string, string>();
+         
+         foreach (string pair in Body.Substring(1, Body.Length - 2).Split(','))
+         {
+            var temp = pair.Trim().Split(':');
+            //dict.Add(temp[0], temp[1]);
+            dict.Add(temp[0].Substring(1, temp[0].Length - 2), temp[1].Substring(1, temp[1].Length - 2));
+         }
+         return dict;
+      }
+
    }
 }

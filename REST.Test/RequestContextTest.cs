@@ -38,7 +38,7 @@ Content-Length: 4
       [Test]
       public void getBodyTest()
       {
-         Assert.AreEqual(request.getBody(), _body);
+         Assert.AreEqual(request.Body, _body);
       }
 
       [Test]

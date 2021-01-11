@@ -23,6 +23,7 @@ namespace REST
    {
       OK = 200,
       Bad_Request = 400,
+      Unauthorized = 401,
       Not_Found = 404,
       Internal_Server_Error = 500
    }
@@ -119,6 +120,14 @@ namespace REST
          Endpoint = new Endpoints();
       }
 
+      public HttpServer(int port)
+      {
+         _port = port;
+         _localAddr = IPAddress.Parse("127.0.0.1");
+         _server = new TcpListener(_localAddr, _port);
+         Endpoint = new Endpoints();
+      }
+
       /// <summary>
       /// starts running the HTTP Server
       /// </summary>
@@ -159,8 +168,9 @@ namespace REST
                {
                   response = new ResponseContext(e.StatusCode);
                }
-               catch (Exception)
+               catch (Exception e)
                {
+                  Console.WriteLine(e.Message);
                   response = new ResponseContext(StatusCode.Internal_Server_Error);
                }
 

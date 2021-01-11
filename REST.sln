@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST", "REST\REST.csproj", "{7B98C01F-13CD-4F0B-AD5F-9FCB41BB5989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST.Test", "REST.Test\REST.Test.csproj", "{CA74F353-A902-4E59-B61C-FC70EE1B04BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "REST.Test", "REST.Test\REST.Test.csproj", "{CA74F353-A902-4E59-B61C-FC70EE1B04BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCG", "MTCG\MTCG.csproj", "{A03B386B-A7B8-47BE-855B-0BEAA0DF3B70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{CA74F353-A902-4E59-B61C-FC70EE1B04BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA74F353-A902-4E59-B61C-FC70EE1B04BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA74F353-A902-4E59-B61C-FC70EE1B04BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A03B386B-A7B8-47BE-855B-0BEAA0DF3B70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A03B386B-A7B8-47BE-855B-0BEAA0DF3B70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A03B386B-A7B8-47BE-855B-0BEAA0DF3B70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A03B386B-A7B8-47BE-855B-0BEAA0DF3B70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
