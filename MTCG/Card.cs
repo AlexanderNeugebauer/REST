@@ -11,6 +11,13 @@ namespace MTCG
       public string ID { get; }
       public string Name { get; }
       public double Damage { get; }
+      public enum Element
+      {
+         water,
+         fire,
+         normal
+      }
+      public Element CardElement { get; }
       public Card(Object[] data)
       {
          ID = data[0].ToString();
@@ -36,6 +43,11 @@ namespace MTCG
          ret += "]";
 
          return ret;
+      }
+
+      virtual public double CalcDamage(Card opponent)
+      {
+         return Damage;
       }
    }
 }

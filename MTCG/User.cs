@@ -108,7 +108,7 @@ namespace MTCG
          }
       }
 
-      public string getDeck()
+      public string getDeckJson()
       {
          try
          {
@@ -135,6 +135,44 @@ namespace MTCG
             throw e;
          }
       }
+
+      public List<Card> getDeckList()
+      {
+         try
+         {
+            Database.Con.Open();
+            var cmd = new NpgsqlCommand($"select * from cards where belongs_to = {ID} and in_deck = true;", Database.Con);
+            var qr = cmd.ExecuteReader();
+            List<Card> collection = new List<Card>();
+            if (!qr.HasRows) { return collection; }
+            object[] buf = new object[16];
+            while (qr.Read())
+            {
+               qr.GetValues(buf);
+               if(buf[1].ToString().Contains("Spell"))
+               {
+                  collection.Add(new SpellCard(buf));
+               }
+               else
+               {
+                  collection.Add(new MonsterCard(buf));
+               }
+               //collection.Add(new Card(buf));
+            }
+            Database.Con.Close();
+            return collection;
+         }
+         catch (Exception e)
+         {
+            if (Database.Con.State == System.Data.ConnectionState.Open)
+            {
+               Database.Con.Close();
+            }
+            throw e;
+         }
+      }
+
+
 
    }
 }

@@ -13,6 +13,9 @@ namespace MTCG
 {
    class Game
    {
+      private User _defender;
+      private User _challenger;
+      private Random random = new Random();
       private User Authorize(RequestContext reqC)
       {
          string token = "";
@@ -176,7 +179,7 @@ namespace MTCG
          User user = Authorize(reqC);
 
          var response = new ResponseContext(StatusCode.OK);
-         response.Body = user.getCollection();
+         response.Body = user.getDeckJson();
 
          return response;
       }
@@ -218,6 +221,85 @@ namespace MTCG
             Database.Con.Close();
             throw;
          }
+      }
+
+      public ResponseContext QueueFight(RequestContext reqC)
+      {
+         User user = Authorize(reqC);
+
+         if (_defender == null)
+         {
+            _defender = user;
+         }
+         else if (_challenger == null)
+         {
+            _challenger = user;
+            try
+            {
+               Fight(_defender, _challenger);   
+
+            }
+            catch (Exception e)
+            {
+               Console.WriteLine(e.StackTrace);
+               throw;
+            }
+
+
+            _defender = null;
+            _challenger = null;
+         }
+
+
+         var response = new ResponseContext(StatusCode.OK);
+         response.Body = user.getDeckJson();
+         return response;
+      }
+
+      public void Fight(User defender, User challenger)
+      {
+         string fightLog = $"--------------------------\n{defender.Username} vs {challenger.Username}\n--------------------------\n";
+         int d, c;
+         double d_dmg, c_dmg; 
+         var d_deck = defender.getDeckList();
+         var c_deck = challenger.getDeckList();
+
+         for (int i = 0; i < 100; i++)
+         {
+            fightLog += $"Round: #{i}\n";
+            d = random.Next(d_deck.Count);
+            c = random.Next(c_deck.Count);
+
+            Console.WriteLine(d);
+            Console.WriteLine(c);
+
+            c_dmg = c_deck[c].CalcDamage(d_deck[d]);
+            d_dmg = d_deck[d].CalcDamage(c_deck[c]);
+            fightLog += $"{d_deck[d].Name}: {d_dmg} | {c_deck[c].Name}: {c_dmg}\n";
+            if (d_dmg > c_dmg)
+            {
+               fightLog += $"{defender.Username} wins this round!\n\n";
+               c_deck.Add(d_deck[d]);
+               d_deck.RemoveAt(d);
+            } else if (d_dmg < c_dmg)
+            {
+               fightLog += $"{challenger.Username} wins this round!\n\n";
+               d_deck.Add(c_deck[c]);
+               c_deck.RemoveAt(c);
+            }
+
+            if (c_deck.Count == 0)
+            {
+               fightLog += $"{defender.Username} wins the battle!\n\n";
+               break;
+            }
+            if (d_deck.Count == 0)
+            {
+               fightLog += $"{challenger.Username} wins the battle!\n\n";
+               break;
+            }
+         }
+         Console.WriteLine(fightLog);
       }
    }
 }
