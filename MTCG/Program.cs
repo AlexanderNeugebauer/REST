@@ -58,7 +58,13 @@ namespace MTCG
          server.Endpoint.RegisterEndpoint("/sessions", Method.POST, game.Login);
          server.Endpoint.RegisterEndpoint("/packages", Method.POST, game.CreatePackage);
          server.Endpoint.RegisterEndpoint("/transactions/packages", Method.POST, game.AcquirePackage);
+         server.Endpoint.RegisterEndpoint("/cards", Method.GET, game.GetCollection);
+         server.Endpoint.RegisterEndpoint("/decks", Method.GET, game.GetDeck);
+         server.Endpoint.RegisterEndpoint("/decks", Method.POST, game.EditDeck);
+
+
          
+
          //server.Endpoint.RegisterEndpoint("/messages", Method.GET, msg.List);
 
          server.Run();

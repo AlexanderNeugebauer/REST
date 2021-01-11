@@ -55,7 +55,6 @@ namespace MTCG
             if (!qr.HasRows) { return false; }
             qr.Read();
             int package_ID = qr.GetInt32(5);
-            Console.WriteLine("abc");
             string cards = $"update cards set belongs_to = {ID} where id in ('";
             for (int i = 0; i < 5; i++)
             {
@@ -70,7 +69,6 @@ namespace MTCG
          }
          catch (Exception e)
          {
-            Console.WriteLine(e.ToString());
             if (Database.Con.State == System.Data.ConnectionState.Open)
             {
                Database.Con.Close();
@@ -81,5 +79,39 @@ namespace MTCG
 
          return true;
       }
+
+      public string getCollection()
+      {
+         try
+         {
+            Database.Con.Open();
+            var cmd = new NpgsqlCommand($"select * from cards where belongs_to = {ID};", Database.Con);
+            var qr = cmd.ExecuteReader();
+            if (!qr.HasRows) { return ""; }
+            List<Card> collection = new List<Card>();
+            object[] buf = new object[16];
+            while (qr.Read())
+            {
+               qr.GetValues(buf);
+               collection.Add(new Card(buf));
+            }
+            Database.Con.Close();
+            return Card.CollectionToJson(collection);
+         }
+         catch (Exception e)
+         {
+            if (Database.Con.State == System.Data.ConnectionState.Open)
+            {
+               Database.Con.Close();
+            }
+            throw e;
+         }
+      }
+
+      public string getDeck()
+      {
+         return "";
+      }
+
    }
 }

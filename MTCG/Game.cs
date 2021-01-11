@@ -159,12 +159,35 @@ namespace MTCG
       public ResponseContext AcquirePackage(RequestContext reqC)
       {
          User user = Authorize(reqC);
-
-         user.BuyPackage();
-         
          var temp = new ResponseContext(StatusCode.OK);
-         temp.Body = user.ID.ToString();
+         if (user.BuyPackage()) { temp.Body = "'purchase': 'success'"; }
+         else { temp.Body = "'purchase': 'failed'"; }
          return temp;
+      }
+
+      public ResponseContext GetCollection(RequestContext reqC)
+      {
+         User user = Authorize(reqC);
+
+         var response = new ResponseContext(StatusCode.OK);
+         response.Body = user.getCollection();
+
+         return response;
+      }
+
+      public ResponseContext GetDeck(RequestContext reqC)
+      {
+         User user = Authorize(reqC);
+
+         var response = new ResponseContext(StatusCode.OK);
+         response.Body = user.getCollection();
+
+         return response;
+      }
+
+      public ResponseContext EditDeck(RequestContext reqC)
+      {
+         return new ResponseContext(StatusCode.OK);
       }
    }
 }
