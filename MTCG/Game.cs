@@ -134,10 +134,6 @@ namespace MTCG
 
             foreach (var card in body.First.First)
             {
-               Console.WriteLine("----");
-               //Console.WriteLine(card.ToString());
-               //Console.WriteLine(card.Value.ToString());
-               Console.WriteLine(card["Id"]);
 
                new NpgsqlCommand($"insert into cards (id, name, damage) values ('{card["Id"]}', '{card["Name"]}', '{card["Damage"]}');", Database.Con).ExecuteNonQuery();
                cardIDs += $"'{card["Id"]}', ";
@@ -187,7 +183,41 @@ namespace MTCG
 
       public ResponseContext EditDeck(RequestContext reqC)
       {
-         return new ResponseContext(StatusCode.OK);
+         User user = Authorize(reqC);
+
+         try
+         {
+            var body = JObject.Parse($"{{\"cards\": {reqC.Body}}}");
+
+            Database.Con.Open();
+            //Database.Con.BeginTransaction();
+            string cardIDs = "(";
+            int i = 0;
+            foreach (var card in body.First.First)
+            {
+               Console.WriteLine(card.ToString());
+               i++;
+               //new NpgsqlCommand($"insert into cards (id, name, damage) values ('{card["Id"]}', '{card["Name"]}', '{card["Damage"]}');", Database.Con).ExecuteNonQuery();
+               cardIDs += $"'{card.ToString()}', ";
+            }
+            if (i != 4 ) { throw new HttpException(StatusCode.Bad_Request); }
+            cardIDs = cardIDs.Substring(0, cardIDs.Length - 2);
+            new NpgsqlCommand($"update cards set in_deck = false where belongs_to = {user.ID};", Database.Con).ExecuteNonQuery();
+            Console.WriteLine($"update cards set in_deck = true where belongs_to = {user.ID} and id in {cardIDs});");
+            new NpgsqlCommand($"update cards set in_deck = true where belongs_to = {user.ID} and id in {cardIDs});", Database.Con).ExecuteNonQuery();
+            //Console.WriteLine($"insert into package values {cardIDs});");
+            //new NpgsqlCommand($"insert into package values {cardIDs});", Database.Con).ExecuteNonQuery();
+            Database.Con.Close();
+
+            return new ResponseContext(StatusCode.OK);
+         }
+         catch (Exception e)
+         {
+            Console.WriteLine(e.ToString());
+            
+            Database.Con.Close();
+            throw;
+         }
       }
    }
 }
