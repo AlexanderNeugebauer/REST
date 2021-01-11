@@ -40,5 +40,46 @@ namespace MTCG
             throw e;
          }
       }
+
+      public bool BuyPackage()
+      {
+         if(_coins < 5) { return false; }
+         _coins -= 5;
+         //Dictionary<int, object> cards= new Dictionary<int, object>();
+         List<string> ccards = new List<string>();
+         try
+         {
+            Database.Con.Open();
+            var cmd = new NpgsqlCommand($"select * from package limit 1;", Database.Con);
+            var qr = cmd.ExecuteReader();
+            if (!qr.HasRows) { return false; }
+            qr.Read();
+            int package_ID = qr.GetInt32(5);
+            Console.WriteLine("abc");
+            string cards = $"update cards set belongs_to = {ID} where id in ('";
+            for (int i = 0; i < 5; i++)
+            {
+               cards += $"{qr.GetString(i)}', '";
+            }
+            cards = cards.Substring(0, cards.Length - 3);
+            qr.Close();
+            new NpgsqlCommand($"update usr set coins = {_coins} where uid = {ID};", Database.Con).ExecuteNonQuery();
+            new NpgsqlCommand(cards + ");", Database.Con).ExecuteNonQuery();
+            new NpgsqlCommand($"delete from package where id = {package_ID};", Database.Con).ExecuteNonQuery();
+            Database.Con.Close();
+         }
+         catch (Exception e)
+         {
+            Console.WriteLine(e.ToString());
+            if (Database.Con.State == System.Data.ConnectionState.Open)
+            {
+               Database.Con.Close();
+            }
+            throw e;
+         }
+
+
+         return true;
+      }
    }
 }

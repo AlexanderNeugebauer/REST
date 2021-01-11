@@ -159,6 +159,8 @@ namespace MTCG
       public ResponseContext AcquirePackage(RequestContext reqC)
       {
          User user = Authorize(reqC);
+
+         user.BuyPackage();
          
          var temp = new ResponseContext(StatusCode.OK);
          temp.Body = user.ID.ToString();
