@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -12,6 +13,19 @@ namespace MTCG
 {
    class Game
    {
+      private User Authorize(RequestContext reqC)
+      {
+         string token = "";
+         if (!reqC.Headers.TryGetValue("Authorization", out token))
+         {
+            throw new HttpException(StatusCode.Unauthorized);
+         }
+         
+         token = token.Replace("Basic ", "");
+         token = token.Replace("-mtcgToken", "");
+
+         return new User(token);
+      }
       private static string ComputeSha256Hash(string rawData)
       {
          // Create a SHA256   
@@ -144,8 +158,11 @@ namespace MTCG
 
       public ResponseContext AcquirePackage(RequestContext reqC)
       {
-
-         return new ResponseContext(StatusCode.OK);
+         User user = Authorize(reqC);
+         
+         var temp = new ResponseContext(StatusCode.OK);
+         temp.Body = user.ID.ToString();
+         return temp;
       }
    }
 }

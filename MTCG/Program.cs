@@ -39,37 +39,6 @@ namespace MTCG
          //}
          return new ResponseContext();
       }
-      public ResponseContext Register(RequestContext reqC)
-      {
-         var body = reqC.getBodyJson();
-         string username, password;
-         if (!body.TryGetValue("Username", out username))
-         {
-            throw new HttpException(StatusCode.Bad_Request);
-         }
-         if (!body.TryGetValue("Password", out password))
-         {
-            throw new HttpException(StatusCode.Bad_Request);
-         }
-         User u = User.Register(username, password);
-         return new ResponseContext(StatusCode.OK);
-      }
-
-      public ResponseContext Login(RequestContext reqC)
-      {
-         var body = reqC.getBodyJson();
-         string username, password;
-         if (!body.TryGetValue("Username", out username))
-         {
-            throw new HttpException(StatusCode.Bad_Request);
-         }
-         if (!body.TryGetValue("Password", out password))
-         {
-            throw new HttpException(StatusCode.Bad_Request);
-         }
-         User u = User.Login(username, password);
-         return new ResponseContext(StatusCode.OK);
-      }
    }
    class Program
    {
@@ -88,7 +57,7 @@ namespace MTCG
          server.Endpoint.RegisterEndpoint("/users", Method.POST, game.Register);
          server.Endpoint.RegisterEndpoint("/sessions", Method.POST, game.Login);
          server.Endpoint.RegisterEndpoint("/packages", Method.POST, game.CreatePackage);
-
+         server.Endpoint.RegisterEndpoint("/transactions/packages", Method.POST, game.AcquirePackage);
          
          //server.Endpoint.RegisterEndpoint("/messages", Method.GET, msg.List);
 

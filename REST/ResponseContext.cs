@@ -48,6 +48,8 @@ namespace REST
                return "200 OK";
             case StatusCode.Bad_Request:
                return "400 Bad Request";
+            case StatusCode.Unauthorized:
+               return "401 Unauthorized";
             case StatusCode.Not_Found:
                return "404 Not Found";
             default:
