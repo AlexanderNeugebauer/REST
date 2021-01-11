@@ -62,6 +62,7 @@ namespace MTCG
          server.Endpoint.RegisterEndpoint("/deck", Method.GET, game.GetDeck);
          server.Endpoint.RegisterEndpoint("/deck", Method.PUT, game.EditDeck);
          server.Endpoint.RegisterEndpoint("/battles", Method.POST, game.QueueFight);
+         server.Endpoint.RegisterEndpoint("/stats", Method.GET, game.ShowStats);
 
 
          

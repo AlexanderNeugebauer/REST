@@ -223,9 +223,22 @@ namespace MTCG
          }
       }
 
+      public ResponseContext ShowStats(RequestContext reqC)
+      {
+         Console.WriteLine("allala");
+         User user = Authorize(reqC);
+         var ret = new ResponseContext(StatusCode.OK);
+
+
+         ret.Body = $"Games Played / Games Won: {user.GamesPlayed}/{user.GamesWon}";
+
+         return ret;
+      }
+
       public ResponseContext QueueFight(RequestContext reqC)
       {
          User user = Authorize(reqC);
+         var response = new ResponseContext(StatusCode.OK);
 
          if (_defender == null)
          {
@@ -234,29 +247,18 @@ namespace MTCG
          else if (_challenger == null)
          {
             _challenger = user;
-            try
-            {
-               Fight(_defender, _challenger);   
 
-            }
-            catch (Exception e)
-            {
-               Console.WriteLine(e.StackTrace);
-               throw;
-            }
+            response.Body = Fight(_defender, _challenger);
 
 
             _defender = null;
             _challenger = null;
          }
 
-
-         var response = new ResponseContext(StatusCode.OK);
-         response.Body = user.getDeckJson();
          return response;
       }
 
-      public void Fight(User defender, User challenger)
+      public string Fight(User defender, User challenger)
       {
          string fightLog = $"--------------------------\n{defender.Username} vs {challenger.Username}\n--------------------------\n";
          int d, c;
@@ -270,36 +272,74 @@ namespace MTCG
             d = random.Next(d_deck.Count);
             c = random.Next(c_deck.Count);
 
-            Console.WriteLine(d);
-            Console.WriteLine(c);
-
             c_dmg = c_deck[c].CalcDamage(d_deck[d]);
             d_dmg = d_deck[d].CalcDamage(c_deck[c]);
             fightLog += $"{d_deck[d].Name}: {d_dmg} | {c_deck[c].Name}: {c_dmg}\n";
             if (d_dmg > c_dmg)
             {
                fightLog += $"{defender.Username} wins this round!\n\n";
-               c_deck.Add(d_deck[d]);
-               d_deck.RemoveAt(d);
+               d_deck.Add(c_deck[c]);
+               c_deck.RemoveAt(c);
             } else if (d_dmg < c_dmg)
             {
                fightLog += $"{challenger.Username} wins this round!\n\n";
-               d_deck.Add(c_deck[c]);
-               c_deck.RemoveAt(c);
+               c_deck.Add(d_deck[d]);
+               d_deck.RemoveAt(d);
             }
 
             if (c_deck.Count == 0)
             {
                fightLog += $"{defender.Username} wins the battle!\n\n";
+               PostFightUpdate(defender, challenger);
                break;
             }
             if (d_deck.Count == 0)
             {
                fightLog += $"{challenger.Username} wins the battle!\n\n";
+               PostFightUpdate(challenger, defender);
                break;
             }
          }
+         PostFightUpdate(defender, challenger, true);
          Console.WriteLine(fightLog);
+         return fightLog;
+      }
+
+      private void PostFightUpdate(User winner, User loser)
+      {
+         try
+         {
+            Database.Con.Open();
+            new NpgsqlCommand($"update usr set games_played = {winner.GamesPlayed + 1}, games_won = {winner.GamesWon + 1} where uid = {winner.ID};", Database.Con).ExecuteNonQuery();
+            new NpgsqlCommand($"update usr set games_played = {loser.GamesPlayed + 1} where uid = {loser.ID};", Database.Con).ExecuteNonQuery();
+            Database.Con.Close();
+         }
+         catch (Exception e)
+         {
+            Database.Con.Close();
+            throw;
+         }
+      }
+
+      private void PostFightUpdate(User winner, User loser, bool flgDraw)
+      {
+         if(!flgDraw) { PostFightUpdate(winner, loser); }
+         else
+         {
+            try
+            {
+               Database.Con.Open();
+               new NpgsqlCommand($"update usr set games_played = {winner.GamesPlayed + 1} where uid = {winner.ID};", Database.Con).ExecuteNonQuery();
+               new NpgsqlCommand($"update usr set games_played = {loser.GamesPlayed + 1} where uid = {loser.ID};", Database.Con).ExecuteNonQuery();
+               Database.Con.Close();
+            }
+            catch (Exception e)
+            {
+               Database.Con.Close();
+               throw;
+            }
+         }
+         
       }
    }
 }

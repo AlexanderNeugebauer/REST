@@ -15,6 +15,8 @@ namespace MTCG
       public string Username { get; private set; }
       //private int[] _cards;
       private int _coins;
+      public int GamesPlayed { get; }
+      public int GamesWon { get; }
 
 
       public User(string username)
@@ -29,6 +31,8 @@ namespace MTCG
             ID = qr.GetInt32(0);
             Username = username;
             _coins = qr.GetInt32(3);
+            GamesPlayed = qr.GetInt32(3);
+            GamesWon = qr.GetInt32(3);
             Database.Con.Close();
          }
          catch (Exception e)
